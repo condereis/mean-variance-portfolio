@@ -44,7 +44,7 @@ mean, variance, _, _ = portfolio.get_minimum_variance_portfolio(expected_return)
 # Plot random allocation and efficient frontier
 plt.plot(variance_list, mean_list, 'o', markersize=3)
 plt.plot(variance, mean, 'o', markersize=6, color='green')
-plt.ylim(ymin=0)  
+plt.ylim(ymin=0)
 plt.xlim(xmin=0)
 plt.xlabel('Variance')
 plt.ylabel('Mean')

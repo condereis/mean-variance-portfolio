@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 
 import numpy as np
 
+
 class Stock(object):
     """Class for handling stocks.
 
@@ -84,7 +85,8 @@ class Stock(object):
     def set_returns(self, returns):
         """Set stock's returns.
 
-        >>> stock.set_returns([ 0.78030572, -0.45237186, -0.59878088, -0.83043576, -0.58860494,
+        >>> stock.set_returns([
+        0.78030572, -0.45237186, -0.59878088, -0.83043576, -0.58860494,
         0.05050412, -1.31361197,  1.31865382,  1.88060814,  2.01899647]))
 
         :param ticker: Stock returns.
@@ -117,7 +119,6 @@ class Stock(object):
         :rtype: array
         """
         return self.__variance
-
 
     def get_portfolio_weight(self):
         """Get stock's weight on the portfolio.

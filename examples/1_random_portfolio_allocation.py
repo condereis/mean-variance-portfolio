@@ -43,10 +43,9 @@ stocks = portfolio.get_stock_list()
 # Plot random allocation and efficient frontier
 plt.plot(variance_list, mean_list, 'o', markersize=3)
 plt.plot([s.get_variance() for s in stocks], [s.get_mean() for s in stocks], 'o', markersize=5, color='red')
-plt.ylim(ymin=0)  
+plt.ylim(ymin=0)
 plt.xlim(xmin=0)
 plt.xlabel('Variance')
 plt.ylabel('Mean')
 plt.title('Random Portfolio Allocation')
 plt.show()
-

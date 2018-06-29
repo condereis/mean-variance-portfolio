@@ -5,7 +5,7 @@
 
 
 import unittest
-import  numpy as np
+import numpy as np
 
 from mvport.portfolio import Portfolio
 

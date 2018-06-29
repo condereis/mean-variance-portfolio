@@ -17,9 +17,10 @@ from .stock import Stock
 class Portfolio(object):
     """Class for calculating mean-variance portfolios.
 
-    Portifolio optimization is done using mean-variance analysis. It is mathematical 
-    framework, developed by Harry Markowitz on 1952, for assembling a portfolio of 
-    assets such that the expected return is maximized for a given level of risk
+    Portifolio optimization is done using mean-variance analysis. It is
+    mathematical framework, developed by Harry Markowitz on 1952, for
+    assembling a portfolio of assets such that the expected return is
+    maximized for a given level of risk.
 
     >>> import mvport as mv
     >>>
@@ -34,7 +35,8 @@ class Portfolio(object):
         self.__stock_list = []
 
     def __recalculate_parameters(self):
-        self.cov = np.matrix(np.cov([s.get_returns() for s in self.__stock_list]))
+        self.cov = np.matrix(np.cov(
+            [s.get_returns() for s in self.__stock_list]))
         self.R = np.matrix([s.get_mean() for s in self.__stock_list])
 
     def add_stock(self, ticker, returns):
@@ -131,13 +133,15 @@ class Portfolio(object):
         """Evaluate portfolio with a given or random set of weights.
 
         >>> portfolio.evaluate(mode='random')
-        0.78030572, 1.45237186, 0.803431562395, [-0.59878088, -0.83043576, -0.58860494]
+        0.78030572, 1.45237186, 0.803431562395,
+        [-0.59878088, -0.83043576, -0.58860494]
 
         :param weights: List of weiths.
         :type weights: list (optional. Default: None)
         :param rf_rate: Risk free return rate.
         :type rf_rate: float (optional. Default: 0.0)
-        :param mode: Evaluation mode, either by 'weigths' given or using 'random' weights.
+        :param mode: Evaluation mode, either by 'weigths'
+        given or using 'random' weights.
         :type mode: string
 
         :returns: Portfolio's mean.
@@ -161,10 +165,11 @@ class Portfolio(object):
         return mean, variance, sharp_ratio, w
 
     def get_minimum_variance_portfolio(self, mean, rf_rate=0):
-        """ Get the portfolio that reduces variance for a given expected return.
+        """ Get the portfolio that reduces variance for a given return.
 
         >>> portfolio.get_minimum_variance_portfolio(0.4)
-        0.4, 1.45237186, 0.803431562395, [-0.59878088, -0.83043576, -0.58860494]
+        0.4, 1.45237186, 0.803431562395,
+        [-0.59878088, -0.83043576, -0.58860494]
 
         :param mean: Portfolio's expected return.
         :type mean: list (optional. Default: None)
@@ -183,25 +188,26 @@ class Portfolio(object):
         cov = self.cov
         N = len(self.__stock_list)
         pbar = self.R
-        
-        # define list of optimal / desired mus for which we'd like to find the optimal sigmas
+
+        # define list of optimal / desired mus for which we'd like to find the
+        # optimal sigmas
         optimal_mus = []
         r_min = pbar.mean()    # minimum expected return
         for i in range(50):
             optimal_mus.append(r_min)
             r_min += (pbar.mean() / 100)
-        
+
         # constraint matrices for quadratic programming
         P = opt.matrix(cov)
         q = opt.matrix(np.zeros((N, 1)))
         G = opt.matrix(np.concatenate((-np.array(pbar), -np.identity(N)), 0))
-        A = opt.matrix(1.0, (1,N))
+        A = opt.matrix(1.0, (1, N))
         b = opt.matrix(1.0)
         h = opt.matrix(np.concatenate((-np.ones((1, 1)), np.zeros((N, 1))), 0))
-        
+
         # hide optimization
         opt.solvers.options['show_progress'] = False
-        
+
         # calculate portfolio weights, every weight vector is of size Nx1
         # find optimal weights with qp(P, q, G, h, A, b)
         optimal_weights = solvers.qp(P, q, G, h * mean, A, b)['x']
@@ -212,8 +218,10 @@ class Portfolio(object):
         """ Get points that belong to the Efficient Frontier.
 
         >>> portfolio.get_efficient_frontier(5)
-        [0.24942349584788953, 0.24942349967976762, 0.2795250781144858, 0.3340090122172212, 0.38899556405336044]
-        [0.23681240830982317, 0.23681240830982359, 0.2515909827391488, 0.35350569620087896, 0.5596628149840878]
+        [0.24942349584788953, 0.24942349967976762, 0.2795250781144858,
+        0.3340090122172212, 0.38899556405336044]
+        [0.23681240830982317, 0.23681240830982359, 0.2515909827391488,
+        0.35350569620087896, 0.5596628149840878]
 
         :param n_points: Portfolio's expected return.
         :type n_points: int (optional. Default: 100)
@@ -224,7 +232,7 @@ class Portfolio(object):
         :rtype: list
         """
         h_mean = 0
-        l_mean= np.inf
+        l_mean = np.inf
         for stock in self.__stock_list:
             mean = stock.get_mean()
             if mean > h_mean:
@@ -237,7 +245,8 @@ class Portfolio(object):
         delta = (h_mean - l_mean) / float(n_points)
         for i in range(n_points):
             expected_mean = l_mean + i * delta
-            mean, variance, _, _ = self.get_minimum_variance_portfolio(expected_mean)
+            mean, variance, _, _ = self.get_minimum_variance_portfolio(
+                expected_mean)
             mean_list.append(mean)
             variance_list.append(variance)
         return mean_list, variance_list
@@ -245,11 +254,13 @@ class Portfolio(object):
     def get_tangency_portfolio(self, rf_rate=0.0):
         """ Get the tangency portfolio.
 
-        The tangency portfolio is the portfolio that maximizes the sharp ratio for a given
-        risk free return rate. It is used SLSQP optimization in order to find the tangency portfolio.
+        The tangency portfolio is the portfolio that maximizes the sharp ratio
+        for a given risk free return rate. It is used SLSQP optimization in
+        order to find the tangency portfolio.
 
         >>> portfolio.get_tangency_portfolio(0.2)
-        0.3, 1.25237186, 0.883431562395, [-0.59878088, -0.83043576, -0.58860494]
+        0.3, 1.25237186, 0.883431562395,
+        [-0.59878088, -0.83043576, -0.58860494]
 
         :param rf_rate: Risk free return rate.
         :type rf_rate: float (optional. Default: 0.0)
@@ -266,20 +277,21 @@ class Portfolio(object):
         # Function to be minimized
         def fitness(W, R, C, rf):
             _, _, sharp_ratio, _ = self.evaluate(W, rf)
-            return 1/sharp_ratio
+            return 1 / sharp_ratio
 
         # Set uniform initial weights
         n = len(self.__stock_list)
-        W = np.ones([n])/n
+        W = np.ones([n]) / n
         # Define constraints and bounds
         # Sum of weights = 1
         # Weights between 0 and 1 (no shorting)
-        constraints = ({'type':'eq', 'fun': lambda W: sum(W)-1. })
-        bounds = [(0.,1.) for i in range(n)]
+        constraints = ({'type': 'eq', 'fun': lambda W: sum(W) - 1.})
+        bounds = [(0., 1.) for i in range(n)]
 
         # Run optimizer
-        optimized = optimize.minimize(fitness, W, (self.R, self.cov, rf_rate), 
-                    method='SLSQP', constraints=constraints, bounds=bounds)  
-        if not optimized.success: 
+        optimized = optimize.minimize(
+            fitness, W, (self.R, self.cov, rf_rate),
+            method='SLSQP', constraints=constraints, bounds=bounds)
+        if not optimized.success:
             raise BaseException(optimized.message)
         return self.evaluate(optimized.x, rf_rate)

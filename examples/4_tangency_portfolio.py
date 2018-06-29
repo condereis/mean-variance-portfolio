@@ -25,13 +25,12 @@ stocks = [
 
 # Instantiate portfolio and add stocks
 portfolio = mv.Portfolio()
-# for stock in stocks:
-#     returns = portfolio.generate_return_series(stock['mean'], stock['variance'], NUM_SAMPLES)
-#     portfolio.add_stock(stock['ticker'], returns)
-portfolio.add_stock('t1', [.1,.2,.3])
-portfolio.add_stock('t1', [.1,.3,.5])
+for stock in stocks:
+    returns = portfolio.generate_return_series(stock['mean'], stock['variance'], NUM_SAMPLES)
+    portfolio.add_stock(stock['ticker'], returns)
+
 # Get efficient frontier
-efficient_means, efficient_variances = portfolio.get_efficient_frontier(n_points=1000)
+efficient_means, efficient_variances = portfolio.get_efficient_frontier()
 
 # Get tangency portfolio
 risk_free_rate = 0.1
@@ -40,9 +39,10 @@ tangent_alpha = (mean - risk_free_rate) / variance
 
 # Plot efficient frontier and tangency portfolio
 plt.plot(efficient_variances, efficient_means, 'y-o', markersize=3, color='orange')
-plt.plot([0,2*variance], [risk_free_rate, 2*tangent_alpha*variance+risk_free_rate], markersize=3, color='red')
+plt.plot([0, 2 * variance], [risk_free_rate, 2 * tangent_alpha * variance + risk_free_rate],
+         markersize=3, color='red')
 plt.plot(variance, mean, 'o', markersize=6, color='green')
-plt.ylim(ymin=0)  
+plt.ylim(ymin=0)
 plt.xlim(xmin=0)
 plt.xlabel('Variance')
 plt.ylabel('Mean')
