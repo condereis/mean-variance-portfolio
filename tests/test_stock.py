@@ -49,3 +49,6 @@ class TestStock(unittest.TestCase):
         self.stock.set_returns([-3,-1,0,1,3])
         self.assertEqual(self.stock.get_variance(), 4)
 
+
+if __name__ == '__main__':
+    sys.exit(unittest.main())
