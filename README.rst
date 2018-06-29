@@ -6,16 +6,16 @@ Mean Variance Portfolio
 .. image:: https://img.shields.io/pypi/v/mvport.svg
         :target: https://pypi.python.org/pypi/mvport
 
-.. image:: https://img.shields.io/travis/condereis/mvport.svg
-        :target: https://travis-ci.org/condereis/mvport
+.. image:: https://img.shields.io/travis/condereis/mean-variance-portfolio.svg
+        :target: https://travis-ci.org/condereis/mean-variance-portfolio
 
-.. image:: https://readthedocs.org/projects/mvport/badge/?version=latest
-        :target: https://mvport.readthedocs.io/en/latest/?badge=latest
+.. image:: https://readthedocs.org/projects/mean-variance-portfolio/badge/?version=latest
+        :target: https://mean-variance-portfolio.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
 
-.. image:: https://pyup.io/repos/github/condereis/mvport/shield.svg
-     :target: https://pyup.io/repos/github/condereis/mvport/
+.. image:: https://pyup.io/repos/github/condereis/mean-variance-portfolio/shield.svg
+     :target: https://pyup.io/repos/github/condereis/mean-variance-portfolio/
      :alt: Updates
 
 
@@ -45,7 +45,7 @@ To install MV Port, run this command in your terminal:
 
 .. code:: bash
 
-    $ pip install mv-port
+    $ pip install mvport
 
 Check `here <https://mvport.readthedocs.io/en/latest/installation.html>`_  for further information on installation.
 
