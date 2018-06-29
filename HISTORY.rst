@@ -6,3 +6,8 @@ History
 ------------------
 
 * First release on PyPI.
+* Stock class implemented.
+* Portfolio class implemented.
+* Minimum Variance Portfolio optimization
+* Efficient Frontier evaluation
+* Tangency Portfolio for a given risk free return rate
