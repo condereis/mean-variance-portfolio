@@ -2,5 +2,5 @@
 
 """Unit test package for mvport."""
 
-import test_portfolio
-import test_stock
+# import .test_portfolio
+# import .test_stock
