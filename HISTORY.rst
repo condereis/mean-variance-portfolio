@@ -11,3 +11,21 @@ History
 * Minimum Variance Portfolio optimization
 * Efficient Frontier evaluation
 * Tangency Portfolio for a given risk free return rate
+
+
+1.0.1 (2018-06-28)
+------------------
+
+* Minor ajusts.
+
+
+1.0.2 (2018-06-28)
+------------------
+
+* Minor ajusts.
+
+
+1.1.0 (2018-08-05)
+------------------
+
+* Portfalio evaluation given actual stocks returns.

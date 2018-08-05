@@ -24,10 +24,7 @@ class Portfolio(object):
 
     >>> import mvport as mv
     >>>
-    >>> stock = mv.Portfolio()
-
-    :param ticker: Stock ticker in Yahoo Finances format.
-    :type ticker: string
+    >>> portfolio = mv.Portfolio()
     """
 
     def __init__(self):
@@ -162,7 +159,35 @@ class Portfolio(object):
         mean = float(w * self.R.T)
         variance = float(w * self.cov * w.T)
         sharp_ratio = (mean - rf_rate) / variance
+
+        # Save weights on each stock
+        for i, stock in enumerate(self.__stock_list):
+            stock.set_portfolio_weight(w[0, i])
+
         return mean, variance, sharp_ratio, w
+
+    def get_return(self, return_per_stock):
+        """Evaluate portfolio return.
+
+        >>> portfolio.get_return({
+            'AAPL': 0.2544,
+            'YHOO': -0.0245
+        })
+        0.19878088
+
+        :param return_per_stock: Dictionary with returns of each stock.
+        :type return_per_stock: dict 
+
+        :returns: Portfolio's return.
+        :rtype: float
+        """
+        total_return = 0
+        for stock in  self.__stock_list:
+            ticker = stock.get_ticker()
+            total_return += return_per_stock[ticker] * stock.get_portfolio_weight()
+
+        return total_return
+
 
     def get_minimum_variance_portfolio(self, mean, rf_rate=0):
         """ Get the portfolio that reduces variance for a given return.
@@ -294,4 +319,5 @@ class Portfolio(object):
             method='SLSQP', constraints=constraints, bounds=bounds)
         if not optimized.success:
             raise BaseException(optimized.message)
+
         return self.evaluate(optimized.x, rf_rate)

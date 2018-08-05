@@ -82,6 +82,16 @@ class TestPortfolio(unittest.TestCase):
         self.assertEqual(sharp_ratio, (mean - risk_free) / variance)
         np.testing.assert_array_equal(w, np.matrix([.5, .5]))
 
+    def test_get_return(self):
+        """Test get_return."""
+        risk_free = 0
+        mean, variance, sharp_ratio, w = self.portfolio.evaluate([.5, .5], risk_free)
+        p_return = self.portfolio.get_return({
+            self.ticker1: 0.0,
+            self.ticker2: 1.0
+        })
+        self.assertEqual(p_return, 0.5)
+
     def test_get_minimum_variance_portfolio(self):
         """Test get_minimum_variance_portfolio."""
         risk_free = 0
