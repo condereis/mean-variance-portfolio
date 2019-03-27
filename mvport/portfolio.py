@@ -211,15 +211,19 @@ class Portfolio(object):
         """
         N = len(self.__stock_list)
         one_vec = np.ones((N, 1))
-        a = one_vec.T * inv(self.cov) * one_vec
-        b = one_vec.T * inv(self.cov) * self.R.T
-        c = self.R * inv(self.cov) * self.R.T
+        try:
+            cov_inv = np.linalg.inv(self.cov)
+        except Exception as e:
+            cov_inv = np.linalg.pinv(self.cov)
+        a = one_vec.T * cov_inv * one_vec
+        b = one_vec.T * cov_inv * self.R.T
+        c = self.R * cov_inv * self.R.T
         delta = a * c - b**2
         l1 = (c - b * mean) / delta
         l2 = (a * mean - b) / delta
 
-        optimal_weights = inv(self.cov) * (one_vec * l1 + self.R.transpose() * l2)
-        optimal_weights =  optimal_weights.reshape((-1)).tolist()[0]
+        optimal_weights = cov_inv * (one_vec * l1 + self.R.transpose() * l2)
+        optimal_weights = optimal_weights.reshape((-1)).tolist()[0]
 
         return self.evaluate(list(optimal_weights))
 
@@ -245,9 +249,13 @@ class Portfolio(object):
 
         N = len(self.__stock_list)
         one_vec = np.ones((N, 1))
-        a = one_vec.T * inv(self.cov) * one_vec
-        b = one_vec.T * inv(self.cov) * self.R.T
-        c = self.R * inv(self.cov) * self.R.T
+        try:
+            cov_inv = np.linalg.inv(self.cov)
+        except Exception as e:
+            cov_inv = np.linalg.pinv(self.cov)
+        a = one_vec.T * cov_inv * one_vec
+        b = one_vec.T * cov_inv * self.R.T
+        c = self.R * cov_inv * self.R.T
         delta = a * c - b**2
         min_mean = float(b/a)
         if not max_mean:
@@ -285,7 +293,10 @@ class Portfolio(object):
         # Function to be minimized
         N = len(self.__stock_list)
         one_vec = np.ones((N, 1))
-        cov_inv = np.linalg.pinv(self.cov)
+        try:
+            cov_inv = np.linalg.inv(self.cov)
+        except Exception as e:
+            cov_inv = np.linalg.pinv(self.cov)
         a = one_vec.T * cov_inv * one_vec
         b = one_vec.T * cov_inv * self.R.T
         optimal_weights = (cov_inv * (self.R.T - rf_rate * one_vec)) / (b - a * rf_rate)
