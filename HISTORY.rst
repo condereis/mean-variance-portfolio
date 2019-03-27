@@ -29,3 +29,8 @@ History
 ------------------
 
 * Portfalio evaluation given actual stocks returns.
+
+1.2.0 (2019-03-27)
+------------------
+
+* Calculating the optimization problem manualy so cvxopt is no longer necessary.

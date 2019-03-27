@@ -4,10 +4,9 @@ Portfolio module.
 
 from __future__ import unicode_literals
 
-import cvxopt as opt
 import numpy as np
+from numpy.linalg import pinv
 
-from cvxopt import solvers
 from scipy import optimize
 
 from .utils import get_random_weights
@@ -210,36 +209,21 @@ class Portfolio(object):
         :returns: Portfolio's weights.
         :rtype: matrix
         """
-        cov = self.cov
         N = len(self.__stock_list)
-        pbar = self.R
+        one_vec = np.ones((N, 1))
+        a = one_vec.T * inv(self.cov) * one_vec
+        b = one_vec.T * inv(self.cov) * self.R.T
+        c = self.R * inv(self.cov) * self.R.T
+        delta = a * c - b**2
+        l1 = (c - b * mean) / delta
+        l2 = (a * mean - b) / delta
 
-        # define list of optimal / desired mus for which we'd like to find the
-        # optimal sigmas
-        optimal_mus = []
-        r_min = pbar.mean()    # minimum expected return
-        for i in range(50):
-            optimal_mus.append(r_min)
-            r_min += (pbar.mean() / 100)
-
-        # constraint matrices for quadratic programming
-        P = opt.matrix(cov)
-        q = opt.matrix(np.zeros((N, 1)))
-        G = opt.matrix(np.concatenate((-np.array(pbar), -np.identity(N)), 0))
-        A = opt.matrix(1.0, (1, N))
-        b = opt.matrix(1.0)
-        h = opt.matrix(np.concatenate((-np.ones((1, 1)), np.zeros((N, 1))), 0))
-
-        # hide optimization
-        opt.solvers.options['show_progress'] = False
-
-        # calculate portfolio weights, every weight vector is of size Nx1
-        # find optimal weights with qp(P, q, G, h, A, b)
-        optimal_weights = solvers.qp(P, q, G, h * mean, A, b)['x']
+        optimal_weights = inv(self.cov) * (one_vec * l1 + self.R.transpose() * l2)
+        optimal_weights =  optimal_weights.reshape((-1)).tolist()[0]
 
         return self.evaluate(list(optimal_weights))
 
-    def get_efficient_frontier(self, n_points=100):
+    def get_efficient_frontier(self, n_points=100, max_mean=None):
         """ Get points that belong to the Efficient Frontier.
 
         >>> portfolio.get_efficient_frontier(5)
@@ -250,31 +234,30 @@ class Portfolio(object):
 
         :param n_points: Portfolio's expected return.
         :type n_points: int (optional. Default: 100)
+        :param max_mean: Efficient Frontier's maximum mean.
+        :type max_mean: int (optional. Default: Maximum mean among R)
 
         :returns: Points' means.
         :rtype: list
         :returns: Points' variances.
         :rtype: list
         """
-        h_mean = 0
-        l_mean = np.inf
-        for stock in self.__stock_list:
-            mean = stock.get_mean()
-            if mean > h_mean:
-                h_mean = mean
-            if mean < l_mean:
-                l_mean = mean
 
-        mean_list = []
-        variance_list = []
-        delta = (h_mean - l_mean) / float(n_points)
-        for i in range(n_points):
-            expected_mean = l_mean + i * delta
-            mean, variance, _, _ = self.get_minimum_variance_portfolio(
-                expected_mean)
-            mean_list.append(mean)
-            variance_list.append(variance)
-        return mean_list, variance_list
+        N = len(self.__stock_list)
+        one_vec = np.ones((N, 1))
+        a = one_vec.T * inv(self.cov) * one_vec
+        b = one_vec.T * inv(self.cov) * self.R.T
+        c = self.R * inv(self.cov) * self.R.T
+        delta = a * c - b**2
+        min_mean = float(b/a)
+        if not max_mean:
+            max_mean = np.max(self.R)
+        mean = np.linspace(min_mean, max_mean, n_points)
+        # mean = mean.append(max_r)
+        var = (a * mean**2 - 2 * b * mean + c) / delta
+
+        return mean, var.T
+
 
     def get_tangency_portfolio(self, rf_rate=0.0):
         """ Get the tangency portfolio.
@@ -300,24 +283,13 @@ class Portfolio(object):
         :rtype: matrix
         """
         # Function to be minimized
-        def fitness(W, R, C, rf):
-            _, _, sharp_ratio, _ = self.evaluate(W, rf)
-            return 1 / sharp_ratio
+        N = len(self.__stock_list)
+        one_vec = np.ones((N, 1))
+        cov_inv = np.linalg.pinv(self.cov)
+        a = one_vec.T * cov_inv * one_vec
+        b = one_vec.T * cov_inv * self.R.T
+        optimal_weights = (cov_inv * (self.R.T - rf_rate * one_vec)) / (b - a * rf_rate)
+        optimal_weights = optimal_weights.reshape((-1)).tolist()[0]
 
-        # Set uniform initial weights
-        n = len(self.__stock_list)
-        W = np.ones([n]) / n
-        # Define constraints and bounds
-        # Sum of weights = 1
-        # Weights between 0 and 1 (no shorting)
-        constraints = ({'type': 'eq', 'fun': lambda W: sum(W) - 1.})
-        bounds = [(0., 1.) for i in range(n)]
+        return self.evaluate(list(optimal_weights))
 
-        # Run optimizer
-        optimized = optimize.minimize(
-            fitness, W, (self.R, self.cov, rf_rate),
-            method='SLSQP', constraints=constraints, bounds=bounds)
-        if not optimized.success:
-            raise BaseException(optimized.message)
-
-        return self.evaluate(optimized.x, rf_rate)
