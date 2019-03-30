@@ -24,7 +24,7 @@ MV Port is a Python package to perform Mean-Variance Analysis. It provides a Por
 
 
 * Free software: MIT license
-* Documentation: https://mvport.readthedocs.io.
+* Documentation: https://mean-variance-portfolio.readthedocs.io.
 
 .. Modern portfolio theory (MPT), or mean-variance analysis, is a mathematical framework for assembling a portfolio of assets such that the expected return is maximized for a given level of risk. It is a formalization and extension of diversification in investing, the idea that owning different kinds of financial assets is less risky than owning only one type. Its key insight is that an asset's risk and return should not be assessed by itself, but by how it contributes to a portfolio's overall risk and return. It uses the variance of asset prices as a proxy for risk.
 
@@ -47,7 +47,7 @@ To install MV Port, run this command in your terminal:
 
     $ pip install mvport
 
-Check `here <https://mvport.readthedocs.io/en/latest/installation.html>`_  for further information on installation.
+Check `here <https://mean-variance-portfolio.readthedocs.io/en/latest/installation.html>`_  for further information on installation.
 
 Basic Usage
 -----------
@@ -64,4 +64,4 @@ Instantiate a portfolio and add some stock and evaluate it given a set of weight
     >>> print '{} +- {}'.format(mean, variance)
     0.25 +- 0.0225
 
-Check `here <https://mvport.readthedocs.io/en/latest/usage.html>`_  for further information on usage.
+Check `here <https://mean-variance-portfolio.readthedocs.io/latest/usage.html>`_  for further information on usage.

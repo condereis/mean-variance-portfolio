@@ -30,12 +30,20 @@ History
 
 * Portfalio evaluation given actual stocks returns.
 
+
 1.2.0 (2019-03-27)
 ------------------
 
 * Calculating the optimization problem manualy so cvxopt is no longer necessary.
 
+
 1.3.0 (2019-03-30)
 ------------------
 
 * Use pseudo inverse when covariance matrix is close to singular.
+
+
+1.3.1 (2019-03-31)
+------------------
+
+* Fix docs URL on README.
