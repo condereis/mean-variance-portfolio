@@ -35,13 +35,13 @@ efficient_means, efficient_variances = portfolio.get_efficient_frontier()
 # Get tangency portfolio
 risk_free_rate = 0.1
 mean, variance, _, _ = portfolio.get_tangency_portfolio(risk_free_rate)
-tangent_alpha = (mean - risk_free_rate) / variance
+tangent_alpha = (mean - risk_free_rate) / np.sqrt(variance)
 
 # Plot efficient frontier and tangency portfolio
-plt.plot(efficient_variances, efficient_means, 'y-o', markersize=3, color='orange')
-plt.plot([0, 2 * variance], [risk_free_rate, 2 * tangent_alpha * variance + risk_free_rate],
+plt.plot(np.sqrt(efficient_variances), efficient_means, 'y-o', markersize=3, color='orange')
+plt.plot([0, 2 * np.sqrt(variance)], [risk_free_rate, 2 * tangent_alpha * np.sqrt(variance) + risk_free_rate],
          markersize=3, color='red')
-plt.plot(variance, mean, 'o', markersize=6, color='green')
+plt.plot(np.sqrt(variance), mean, 'o', markersize=6, color='green')
 plt.ylim(ymin=0)
 plt.xlim(xmin=0)
 plt.xlabel('Variance')

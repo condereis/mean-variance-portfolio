@@ -18,7 +18,7 @@ class TestPortfolio(unittest.TestCase):
         self.ticker1 = 'AAPL'
         self.ticker2 = 'AMZN'
         self.returns1 = [.1,.2,.3]
-        self.returns2 = [.1,.3,.5]
+        self.returns2 = [.1,.5,.3]
         self.portfolio = Portfolio()
         self.portfolio.add_stock(self.ticker1, self.returns1)
         self.portfolio.add_stock(self.ticker2, self.returns2)
@@ -78,7 +78,7 @@ class TestPortfolio(unittest.TestCase):
         risk_free = 0
         mean, variance, sharp_ratio, w = self.portfolio.evaluate([.5, .5], risk_free)
         self.assertEqual(mean, .25)
-        self.assertEqual(variance, .0225)
+        self.assertEqual(variance, .0175)
         self.assertEqual(sharp_ratio, (mean - risk_free) / variance)
         np.testing.assert_array_equal(w, np.matrix([.5, .5]))
 
@@ -98,7 +98,7 @@ class TestPortfolio(unittest.TestCase):
         expected_return = .25
         mean, variance, sharp_ratio, w = self.portfolio.get_minimum_variance_portfolio(expected_return, risk_free)
         self.assertEqual(round(mean, 2), .25)
-        self.assertEqual(round(variance, 4), .0225)
+        self.assertEqual(round(variance, 4), .0175)
         self.assertEqual( round(sharp_ratio, 2), round(((mean - risk_free) / variance), 2))
         for i in w.tolist()[0]:
             for j in [.5, .5]:
@@ -125,10 +125,10 @@ class TestPortfolio(unittest.TestCase):
         n_points = 100
         means, variances = self.portfolio.get_efficient_frontier()
         t_mean, t_variance, _, _ = self.portfolio.get_tangency_portfolio(risk_free)
-        tline_a = (t_mean - risk_free) / t_variance
+        tline_a = (t_mean - risk_free) / np.sqrt(t_variance)
         tline_b = risk_free
         for mean, variance in zip(means, variances):
-            t_mean = tline_a * variance + tline_b
+            t_mean = tline_a * np.sqrt(variance) + tline_b
             self.assertGreaterEqual(t_mean, mean)
 
 

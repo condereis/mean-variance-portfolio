@@ -34,3 +34,8 @@ History
 ------------------
 
 * Calculating the optimization problem manualy so cvxopt is no longer necessary.
+
+1.3.0 (2019-03-30)
+------------------
+
+* Use pseudo inverse when covariance matrix is close to singular.

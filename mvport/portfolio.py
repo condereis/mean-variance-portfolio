@@ -33,7 +33,7 @@ class Portfolio(object):
     def __recalculate_parameters(self):
         self.cov = np.matrix(np.cov(
             [s.get_returns() for s in self.__stock_list]))
-        self.R = np.matrix([s.get_mean() for s in self.__stock_list])
+        self.R = np.matrix([[s.get_mean()] for s in self.__stock_list])
 
     def add_stock(self, ticker, returns):
         """Add stock to portfolio.
@@ -92,7 +92,7 @@ class Portfolio(object):
         :returns: Returns' mean of all the stocks.
         :rtype: matrix
         """
-        return self.R
+        return self.R.T
 
     def get_covariance(self):
         """Get a covariance matrix of the stock's returns on the portfolio.
@@ -155,7 +155,7 @@ class Portfolio(object):
 
         # Calculate expected portfolio return and variance
         w = np.matrix(weights)
-        mean = float(w * self.R.T)
+        mean = float(w * self.R)
         variance = float(w * self.cov * w.T)
         sharp_ratio = (mean - rf_rate) / variance
 
@@ -211,20 +211,22 @@ class Portfolio(object):
         """
         N = len(self.__stock_list)
         one_vec = np.ones((N, 1))
-        try:
+        if np.linalg.det(self.cov) > 1e-10:
             cov_inv = np.linalg.inv(self.cov)
-        except Exception as e:
+        else:
             cov_inv = np.linalg.pinv(self.cov)
-        a = one_vec.T * cov_inv * one_vec
-        b = one_vec.T * cov_inv * self.R.T
-        c = self.R * cov_inv * self.R.T
+
+        a = float(one_vec.T * cov_inv * one_vec)
+        b = float(one_vec.T * cov_inv * self.R)
+        c = float(self.R.T * cov_inv * self.R)
+
         delta = a * c - b**2
+
         l1 = (c - b * mean) / delta
         l2 = (a * mean - b) / delta
 
-        optimal_weights = cov_inv * (one_vec * l1 + self.R.transpose() * l2)
-        optimal_weights = optimal_weights.reshape((-1)).tolist()[0]
-
+        optimal_weights = l1 * cov_inv * one_vec + l2 * cov_inv * self.R
+        optimal_weights = (optimal_weights / sum(optimal_weights)).reshape((-1)).tolist()[0]
         return self.evaluate(list(optimal_weights))
 
     def get_efficient_frontier(self, n_points=100, max_mean=None):
@@ -249,19 +251,22 @@ class Portfolio(object):
 
         N = len(self.__stock_list)
         one_vec = np.ones((N, 1))
-        try:
+
+        if np.linalg.det(self.cov) > 1e-10:
             cov_inv = np.linalg.inv(self.cov)
-        except Exception as e:
+        else:
             cov_inv = np.linalg.pinv(self.cov)
-        a = one_vec.T * cov_inv * one_vec
-        b = one_vec.T * cov_inv * self.R.T
-        c = self.R * cov_inv * self.R.T
+
+        a = float(one_vec.T * cov_inv * one_vec)
+        b = float(one_vec.T * cov_inv * self.R)
+        c = float(self.R.T * cov_inv * self.R)
+
         delta = a * c - b**2
-        min_mean = float(b/a)
+
+        min_mean = float(b / a)
         if not max_mean:
             max_mean = np.max(self.R)
         mean = np.linspace(min_mean, max_mean, n_points)
-        # mean = mean.append(max_r)
         var = (a * mean**2 - 2 * b * mean + c) / delta
 
         return mean, var.T
@@ -293,14 +298,14 @@ class Portfolio(object):
         # Function to be minimized
         N = len(self.__stock_list)
         one_vec = np.ones((N, 1))
-        try:
+        if np.linalg.det(self.cov) > 1e-10:
             cov_inv = np.linalg.inv(self.cov)
-        except Exception as e:
+        else:
             cov_inv = np.linalg.pinv(self.cov)
-        a = one_vec.T * cov_inv * one_vec
-        b = one_vec.T * cov_inv * self.R.T
-        optimal_weights = (cov_inv * (self.R.T - rf_rate * one_vec)) / (b - a * rf_rate)
-        optimal_weights = optimal_weights.reshape((-1)).tolist()[0]
+        a = float(one_vec.T * cov_inv * one_vec)
+        b = float(one_vec.T * cov_inv * self.R)
+        optimal_weights = (cov_inv * (self.R - one_vec * rf_rate)) / float(b - a * rf_rate)
+        optimal_weights = (optimal_weights / sum(optimal_weights)).reshape((-1)).tolist()[0]
 
         return self.evaluate(list(optimal_weights))
 
