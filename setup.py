@@ -11,7 +11,7 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = ['numpy==1.14.5',
+requirements = ['numpy==1.22.0',
                 'scipy==1.1.0']
 
 setup_requirements = [ ]
