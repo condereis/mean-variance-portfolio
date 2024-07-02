@@ -36,7 +36,7 @@ setup(
     description="MV Port is a Python package to perform Mean-Variance Analysis. It provides a Portfolio class with a variety of methods to help on your portfolio optimization tasks.",
     install_requires=requirements,
     license="MIT license",
-    long_description=README,
+    long_description=readme,
     long_description_content_type="text/markdown",
     include_package_data=True,
     keywords='mvport',
