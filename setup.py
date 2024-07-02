@@ -11,8 +11,8 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = ['numpy==1.22.0',
-                'scipy==1.1.0']
+requirements = ['numpy==2.0.0',
+                'scipy==1.14.0']
 
 setup_requirements = [ ]
 
@@ -46,6 +46,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/condereis/mean-variance-portfolio',
-    version='1.3.1',
+    version='1.3.2',
     zip_safe=False,
 )
