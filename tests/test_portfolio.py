@@ -4,6 +4,7 @@
 """Tests for `mvport` package."""
 
 
+import sys
 import unittest
 import numpy as np
 
