@@ -47,3 +47,11 @@ History
 ------------------
 
 * Fix docs URL on README.
+
+
+1.3.2 (2024-07-02)
+------------------
+
+* Update project requirements
+* Change travis.ci for github actions
+* Update setup.py
